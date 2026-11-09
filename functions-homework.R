@@ -18,13 +18,21 @@ ds <- tibble(id, x, y, z)
 #Write a function called "limit_replace" that replaces values less than 2 or greater than 8 with NA
 #The function should take a vector as input and return the replaced-vector as an output
 #Then, run the function on x and save the results to a new vector "x_replace" to show it worked
+limit_replace <- function(vec) {vec[vec < 2 | vec > 8] <- NAreturn(vec)}
+x_replace <- limit_replace(x)
+x_replace
 
+#i am not sure if this is correct
 
 ### Question 2 ---------- 
 
 #Make a new version of limit_replace includes arguments for a lower boundary and an upper boundary
 #so that the limits can be specified (instead of being hard coded as 2 and 8)
 #Run the function on vector y with boundaries 4 and 6, saving the results to a new vector "y_replace"
+limit_replace <- function(vec, lower, upper) {vec[vec < lower | vec > upper] <- NAreturn(vec)}
+
+y_replace <- limit_replace(y, lower = 4, upper = 6)
+y_replace
 
 
 ### Question 3 ----------
@@ -35,11 +43,16 @@ ds <- tibble(id, x, y, z)
 #Make num_of_SDs default to 1
 #The output should be a named list two values, lower and upper.
 #Running plus_minus_SD(x) should produce: $lower 2.142724 $upper 8.048324
+plus_minus_SD <- function(vec, num_of_SDs = 1) {
+m <- mean(vec, na.rm = TRUE) s <- sd(vec, na.rm = TRUE) return(list(lower = m - num_of_SDs * s,upper = m + num_of_SDs * s))}
+
+plus_minus_SD(x)    
+plus_minus_SD(y, 2)
 
 
 ### Question 4 ----------
 # Use a map function to run the new function on x, y, and z with 1 SD
-
+#i am not sure about this one 
 
 ### Question 5 ----------
 
@@ -59,13 +72,18 @@ ds <- tibble(id, x, y, z)
 # Before returning the summary stats, the function should also write the 
 # summary stats to a file named "SPECIESNAME_summary.csv"
 
+library(tidyverse)
 ds_iris <- iris
-
-
+species_summary <- function(data, species_name){summary_stats <- data %>% filter(Species == species_name) %>%
+summarise(across(where(is.numeric), list(min = min, mean = mean, max = max, sd = sd))) 
+write_csv(summary_stats, paste0(species_name, "_summary.csv"))return(summary_stats)}
 ### Question 7 ----------
 # Use some type of iteration to run the species_summary() function 
 # on each of the species in ds_iris, capturing the resulting summary data
 # into a tibble
+
+iris_summaries <- species_names %>% map(\(sp) species_summary(ds_iris, species_name = sp)) %>% list_rbind()
+#it is showing me a weird error in this one
 
 
 # If correct, you will have a 3 observation by 16 variable tibble (first 3 columns below)
